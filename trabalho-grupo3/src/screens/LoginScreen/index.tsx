@@ -8,15 +8,14 @@ import {
   ActivityIndicator, 
   TouchableOpacity, 
   Text,
-   
 } from "react-native";
+import axios from "axios"; 
+import { RootStackParamList } from "../../routes/rotas";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../types/types";
-import axios from "axios"; // Ajuste o caminho conforme sua estrutura.
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
-const Login = ({ navigation }: Props) => {
+export const Login = ({ navigation }: Props) => {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,9 +37,11 @@ const Login = ({ navigation }: Props) => {
       } else {
         Alert.alert("Login ou senha estão incorretos");
       }
-    } catch (err) {
+    }
+    catch (err) {
       Alert.alert("Erro de conexão com o servidor");
-    } finally {
+    } 
+    finally {
       setLoading(false);
     }
   };
@@ -48,13 +49,11 @@ const Login = ({ navigation }: Props) => {
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.input}
         placeholder="Usuário"
         value={usuario}
         onChangeText={setUsuario}
       />
       <TextInput
-        style={styles.input}
         placeholder="Senha"
         secureTextEntry
         value={senha}
@@ -63,7 +62,7 @@ const Login = ({ navigation }: Props) => {
       {loading ? (
         <ActivityIndicator size="large" color="#000" />
       ) : (
-        <Button title="Entrar" onPress={fazerLogin} />
+        <Button title="Entrar" onPress={fazerLogin}/>
       )}
       <TouchableOpacity onPress={() => navigation.navigate("Cadastro")}>
         <Text style={styles.cadastrar}>Ainda não tem conta? Cadastre-se</Text>
@@ -78,13 +77,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
   },
-  input: {
-    borderWidth: 1,
-    marginBottom: 16,
-    padding: 8,
-    borderRadius: 4,
-    borderColor: "#ccc",
-  },
   cadastrar: {
     marginTop: 20,
     color: "blue",
@@ -93,5 +85,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-export default Login;

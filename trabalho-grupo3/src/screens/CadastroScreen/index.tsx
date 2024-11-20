@@ -8,12 +8,12 @@ import {
   ActivityIndicator 
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../types/types"; 
-import axios from "axios";// Ajuste o caminho conforme sua estrutura.
+import { RootStackParamList } from "../../routes/rotas";
+import axios from "axios";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Cadastro">;
 
-const Cadastro = ({ navigation }: Props) => {
+export const Cadastro = ({ navigation }: Props) => {
   const [nome, setNome] = useState("");
   const [usuario, setUsuario] = useState("");
   const [email, setEmail] = useState("");
@@ -26,7 +26,6 @@ const Cadastro = ({ navigation }: Props) => {
       Alert.alert("Por favor, preencha todos os campos!");
       return;
     }
-
     if (senha !== confirmaSenha) {
       Alert.alert("Os campos 'Senha' e 'Confirmar Senha' são diferentes!");
       return;
@@ -41,8 +40,6 @@ const Cadastro = ({ navigation }: Props) => {
        email,
        senha,
       });
-
-      
 
       if (response.status === 201) {
         Alert.alert("Usuário cadastrado com sucesso!");
@@ -115,6 +112,3 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
   },
 });
-
-export default Cadastro;
-
