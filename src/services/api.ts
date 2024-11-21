@@ -1,0 +1,1 @@
+const data = "https://mockapi.io/projects/673bbe9196b8dcd5f3f74fc0"
