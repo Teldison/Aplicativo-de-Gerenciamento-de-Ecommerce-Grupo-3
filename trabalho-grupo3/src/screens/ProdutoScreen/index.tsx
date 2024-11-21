@@ -1,72 +1,118 @@
-import { Button, FlatList, Text, TextInput, TouchableOpacity, View, StyleSheet, Alert } from 'react-native';
+import { Button, FlatList, Text, TextInput, TouchableOpacity, View, StyleSheet, Alert, Modal } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import axios from 'axios';
+import { createProdutos, getProdutos, deleteProdutos, updateProdutos } from '../../services/produtoService';
+import { Produto, ProdutoEditado } from '../../types/types';
 
-const URL = "https://673bbe8b96b8dcd5f3f74f7e.mockapi.io/api/produtos";
-
-export const Produto = () => {
-  const [produto, setProduto] = useState("");
-  const [listaProdutos, setListaProdutos] = useState<any[]>([]);
-
+export const ProdutoScreen = () => {
+  const [produto, setProduto] = useState<Produto>({
+    id: undefined,
+    nome: '',
+    preco: 0,
+    descricao: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [listaProdutos, setListaProdutos] = useState<Produto[]>([]);
+  const [isEditing, setIsEditing] = useState<ProdutoEditado>({
+    item: undefined,
+    editando: false,
+  });
+  const [modalVisivel, setModalVisivel] = useState(false);
   
+  useEffect(() => {
+    buscarProdutos();
+  }, []);
+
   const buscarProdutos = async () => {
+    setLoading(true);
     try {
-      const { data } = await axios.get(URL);
-      setListaProdutos(data);
-      console.log("Produtos carregados: ", data);
-    } catch (err) {
-      console.log("Erro ao carregar produtos: ", err);
+      const produtosApi = await getProdutos();
+      setListaProdutos(produtosApi);
+      console.log('Produtos: ', produtosApi);
+    } 
+    catch (err) {
+      console.log('Erro ao carregar produtos: ', err);
+      Alert.alert('Erro', 'Não foi possível carregar a lista de produtos');
     }
+    setLoading(false);
   };
 
   const adicionarProduto = async () => {
-    if (produto === "") {
-      Alert.alert("Atenção", "Por favor, insira um nome para o produto.");
+    if (produto.nome === '') {
+      Alert.alert('Atenção', 'Por favor, insira um nome para o produto.');
       return;
     }
 
-    const novoProduto = {
-      titulo: produto, 
-    };
-
     try {
-      const { data } = await axios.post(URL, novoProduto);
-      setListaProdutos([...listaProdutos, data]); 
-      Alert.alert("Sucesso", "Produto adicionado com sucesso!");
+      const novoProdutoApi = await createProdutos(produto);
+      setListaProdutos([...listaProdutos, novoProdutoApi]);
+
       setProduto("");
-    } catch (err) {
-      console.log("Erro ao adicionar produto: ", err);
-      Alert.alert("Erro", "Não foi possível adicionar o produto.");
+      setModalVisivel(false);
+      Alert.alert('Sucesso', 'Produto adicionado com sucesso!');
+    } 
+    catch (err) {
+      console.log('Erro ao adicionar produto: ', err);
+      Alert.alert('Erro', 'Não foi possível adicionar o produto.');
     }
   };
 
   const deletarProduto = async (id: number) => {
     try {
-      await axios.delete(`${URL}/${id}`);
-      const listaFiltrada = listaProdutos.filter((item) => item.id !== id);
+      await deleteProdutos(id);
+      const listaFiltrada = listaProdutos.filter(
+          (item) => item.id !== id
+      );
       setListaProdutos(listaFiltrada);
-      Alert.alert("Sucesso", "Produto deletado com sucesso!");
-    } catch (err) {
-      console.log("Erro ao deletar produto: ", err);
-      Alert.alert("Erro", "Não foi possível deletar o produto.");
+      Alert.alert('Sucesso', 'Produto deletado com sucesso!');
+    } 
+    catch (err) {
+      console.log('Erro ao deletar produto: ', err);
+      Alert.alert('Erro', 'Não foi possível deletar o produto.');
     }
   };
 
-  useEffect(() => {
-    buscarProdutos();
-  }, []);
+  const editarProduto = (itemProduto: Produto) => {
+    setIsEditing({
+      item: itemProduto,
+      editando: true,
+    });
+    setProduto(itemProduto);
+    setModalVisivel(true);
+  };
+
+  const salvarEdicao = async () => {
+    if (!produto.id) {
+      console.error('Erro: o id do produto com id não existe');
+      return;
+    }
+    try {
+      const produtoEditado = await updateProdutos(produto);
+      const listaAtualizada = listaProdutos.map((item) => {
+        return item.id === produto.id ? produtoEditado : item;
+      });
+      setListaProdutos(listaAtualizada);
+      setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
+      setIsEditing({
+        item: undefined,
+        editando: false,
+      });
+      setModalVisivel(false);
+      Alert.alert('Sucesso', 'Produto atualizado com sucesso!');
+    } catch (err) {
+      console.error('Erro ao salvar edição de produto: ' + err);
+      Alert.alert('Erro', 'Não foi possível atualizar o produto.');
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.containerInput}>
-        <TextInput
-          style={styles.input}
-          value={produto}
-          onChangeText={setProduto}
-          placeholder="Nome do produto"
-        />
-        <Button title="Adicionar Produto" onPress={adicionarProduto} />
+        <Button title="Adicionar Produto" onPress={() => {
+          setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
+          setIsEditing({ item: undefined, editando: false });
+          setModalVisivel(true);
+        }} />
       </View>
 
       <FlatList
@@ -75,20 +121,61 @@ export const Produto = () => {
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
             <Text style={styles.itemText} numberOfLines={1}>
-              {item.titulo}
+              {item.nome}
             </Text>
             <View style={styles.iconContainer}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => editarProduto(item)}>
                 <FontAwesome name="pencil" size={24} color="white" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => deletarProduto(item.id)}>
+              <TouchableOpacity onPress={() => item.id !== undefined && deletarProduto(item.id)}>
                 <FontAwesome name="trash-o" size={24} color="white" />
               </TouchableOpacity>
             </View>
           </View>
         )}
-        keyExtractor={(item) => (item?.id ? item.id.toString() : Math.random().toString())} 
+        keyExtractor={(item) => item.id?.toString() || Math.random().toString()} 
       />
+
+      <Modal visible={modalVisivel} animationType='slide' transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalConteudo}>
+            <Text>Nome do Produto</Text>
+            <TextInput
+              style={styles.input}
+              value={produto.nome}
+              onChangeText={(text) => setProduto({ ...produto, nome: text })}
+              placeholder="Nome do produto"
+            />
+            <Text>Preço do Produto</Text>
+            <TextInput
+              style={styles.input}
+              value={produto.preco ? produto.preco.toString() : ''}
+              onChangeText={(text) => setProduto({ ...produto, preco: parseFloat(text) || 0 })}
+              placeholder="Preço do produto"
+              keyboardType="numeric"
+            />
+            <Text>Descrição do Produto</Text>
+            <TextInput
+              style={styles.input}
+              value={produto.descricao}
+              onChangeText={(text) => setProduto({ ...produto, descricao: text })}
+              placeholder="Descrição do produto"
+            />
+            <Button
+              title={isEditing.editando ? 'Salvar Alterações' : 'Adicionar Produto'}
+              onPress={isEditing.editando ? salvarEdicao : adicionarProduto}
+            />
+            <Button
+              title="Cancelar"
+              onPress={() => {
+                setModalVisivel(false);
+                setIsEditing({ item: undefined, editando: false });
+                setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -97,37 +184,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    
+    marginTop: 50
   },
-  containerInput: {
-   
-  },
+  containerInput: {},
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 8,
-    backgroundColor: "#fff",
-    
+    backgroundColor: '#fff',
     marginBottom: 6,
+    padding: 8,
   },
   lista: {
     marginTop: 8,
   },
   itemContainer: {
-    flexDirection: "row",
-    backgroundColor: "steelblue",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    backgroundColor: 'steelblue',
+    justifyContent: 'space-between',
     padding: 16,
     marginBottom: 8,
     borderRadius: 8,
   },
   itemText: {
-    fontWeight: 500,
+    fontWeight: '500',
     fontSize: 18,
-    color: "#fff",
+    color: '#fff',
+    flex: 1,
+    marginRight: 10,
   },
   iconContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalConteudo: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 35,
+    elevation: 5,
   },
 });

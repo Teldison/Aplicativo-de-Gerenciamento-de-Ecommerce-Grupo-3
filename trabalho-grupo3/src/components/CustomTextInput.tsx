@@ -1,15 +1,14 @@
-import { useState } from "react"
 import { StyleSheet, View } from "react-native";
 
-interface TextInput {
+interface CustomTextInput {
     placeholder : string,
     value: string,
     onChangeText: string,
 }
 
-export const TextInput = ({placeholder, value, onChangeText} : TextInput) =>{
+export const CustomTextInput = ({placeholder, value, onChangeText} : CustomTextInput) =>{
     return(
-        <TextInput
+        <CustomTextInput
             placeholder={placeholder}
             value={value}
             onChangeText={onChangeText}
