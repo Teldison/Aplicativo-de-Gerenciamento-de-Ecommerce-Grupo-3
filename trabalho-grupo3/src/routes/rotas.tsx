@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Login } from '../screens/LoginScreen';
 import { Cadastro } from '../screens/CadastroScreen';
 import { Home } from "../screens/HomeScreen/index"
-import { Produto } from '../screens/ProdutoScreen';
+import { ProdutoScreen } from '../screens/ProdutoScreen';
 
 export type RootStackParamList = {
     Login: undefined;
@@ -21,7 +21,7 @@ export function Rotas() {
         <Stack.Screen options={{ headerShown: false }} name="Login" component={Login} />
         <Stack.Screen options={{ headerShown: false }} name="Cadastro" component={Cadastro} />
         <Stack.Screen options={{ headerShown: false }} name="Home" component={Home}/>
-        <Stack.Screen options={{ headerShown: false }} name="Produtos" component={Produto}/>
+        <Stack.Screen options={{ headerShown: false }} name="Produtos" component={ProdutoScreen}/>
       </Stack.Navigator>
   );
 }
