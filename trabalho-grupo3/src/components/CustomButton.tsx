@@ -11,13 +11,24 @@ export const CustomButton = ({ title, onPress }: CustomButtonProps) => {
             style={styles.button}
             onPress={onPress}
         >
-            <Text>{title}</Text>
+            <Text style={styles.title}>{title}</Text>
         </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
     button: {
-        
+        backgroundColor: '#8B4513',
+        paddingVertical: 10,
+        paddingHorizontal: 30,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderColor: '#5A2D0C',
+    },
+    title: {
+        color: '#000000',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 })

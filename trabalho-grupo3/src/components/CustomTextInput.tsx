@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 interface CustomTextInput {
     placeholder : string,
     value: string,
-    onChangeText: string,
+    onChangeText: (text: string)=> void,
 }
 
 export const CustomTextInput = ({placeholder, value, onChangeText} : CustomTextInput) =>{
@@ -18,11 +18,13 @@ export const CustomTextInput = ({placeholder, value, onChangeText} : CustomTextI
 
 const styles = StyleSheet.create({
   input: {
+    width: '100%',
+    height: 40,
+    borderColor: '#8B4513', 
     borderWidth: 1,
-    marginBottom: 16,
-    padding: 10,
-    borderRadius: 10,
-    borderColor: "#ccc",
-  },
+    borderRadius: 5,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+},
 
 })

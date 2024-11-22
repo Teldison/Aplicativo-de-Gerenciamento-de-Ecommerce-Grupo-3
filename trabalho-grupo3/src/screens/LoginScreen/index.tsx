@@ -4,7 +4,7 @@ import {
   Button, 
   TextInput, 
   View, 
-  StyleSheet, 
+  StyleSheet,
   ActivityIndicator, 
   TouchableOpacity, 
   Text,

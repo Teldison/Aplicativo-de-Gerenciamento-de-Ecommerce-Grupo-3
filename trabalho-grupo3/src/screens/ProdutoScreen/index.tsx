@@ -1,8 +1,9 @@
-import { Button, FlatList, Text, TextInput, TouchableOpacity, View, StyleSheet, Alert, Modal } from 'react-native';
+import { Button, FlatList, Text, TextInput, TouchableOpacity, View, StyleSheet, Alert, Modal, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createProdutos, getProdutos, deleteProdutos, updateProdutos } from '../../services/produtoService';
 import { Produto, ProdutoEditado } from '../../types/types';
+import { CustomButton } from '../../components/CustomButton';
 
 export const ProdutoScreen = () => {
   const [produto, setProduto] = useState<Produto>({
@@ -47,7 +48,7 @@ export const ProdutoScreen = () => {
       const novoProdutoApi = await createProdutos(produto);
       setListaProdutos([...listaProdutos, novoProdutoApi]);
 
-      setProduto("");
+      setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
       setModalVisivel(false);
       Alert.alert('Sucesso', 'Produto adicionado com sucesso!');
     } 
@@ -107,76 +108,81 @@ export const ProdutoScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.containerInput}>
-        <Button title="Adicionar Produto" onPress={() => {
-          setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
-          setIsEditing({ item: undefined, editando: false });
-          setModalVisivel(true);
-        }} />
-      </View>
+        <View style={styles.containerInput}>
+          <Button title="Adicionar Produto" onPress={() => {
+            setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
+            setIsEditing({ item: undefined, editando: false });
+            setModalVisivel(true);
+          }} 
+          />
+        </View>
+          {loading?
+          (<ActivityIndicator size="large" color="#000" />)
+          :(
+            <FlatList
+              style={styles.lista}
+              data={listaProdutos}
+              renderItem={({ item }) => (
+                <View style={styles.itemContainer}>
+                  <Text style={styles.itemText} numberOfLines={2}>
+                    {item.nome}
+                    {item.preco}
+                  </Text>
+                  <View style={styles.iconContainer}>
+                    <TouchableOpacity onPress={() => editarProduto(item)}>
+                      <FontAwesome name="pencil" size={24} color="white" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => item.id !== undefined && deletarProduto(item.id)}>
+                      <FontAwesome name="trash-o" size={24} color="white" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+              keyExtractor={(item) => item.id?.toString() || Math.random().toString()} 
+            />)}
 
-      <FlatList
-        style={styles.lista}
-        data={listaProdutos}
-        renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <Text style={styles.itemText} numberOfLines={1}>
-              {item.nome}
-            </Text>
-            <View style={styles.iconContainer}>
-              <TouchableOpacity onPress={() => editarProduto(item)}>
-                <FontAwesome name="pencil" size={24} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => item.id !== undefined && deletarProduto(item.id)}>
-                <FontAwesome name="trash-o" size={24} color="white" />
-              </TouchableOpacity>
+        <Modal visible={modalVisivel} animationType='slide' transparent>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalConteudo}>
+              <Text>Nome do Produto</Text>
+              <TextInput
+                style={styles.input}
+                value={produto.nome}
+                onChangeText={(text) => setProduto({ ...produto, nome: text })}
+                placeholder="Nome do produto"
+              />
+              <Text>Preço do Produto</Text>
+              <TextInput
+                style={styles.input}
+                value={produto.preco ? produto.preco.toString() : ''}
+                onChangeText={(text) => setProduto({ ...produto, preco: parseFloat(text) || 0 })}
+                placeholder="Preço do produto"
+                keyboardType="numeric"
+              />
+              <Text>Descrição do Produto</Text>
+              <TextInput
+                style={styles.input}
+                value={produto.descricao}
+                onChangeText={(text) => setProduto({ ...produto, descricao: text })}
+                placeholder="Descrição do produto"
+              />
+              <Button
+                title={isEditing.editando ? 'Salvar Alterações' : 'Adicionar Produto'}
+                onPress={isEditing.editando ? salvarEdicao : adicionarProduto}
+              />
+              <Button
+                title="Cancelar"
+                onPress={() => {
+                  setModalVisivel(false);
+                  setIsEditing({ item: undefined, editando: false });
+                  setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
+                }}
+              />
             </View>
           </View>
-        )}
-        keyExtractor={(item) => item.id?.toString() || Math.random().toString()} 
-      />
+        </Modal>
+      </View>
 
-      <Modal visible={modalVisivel} animationType='slide' transparent>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalConteudo}>
-            <Text>Nome do Produto</Text>
-            <TextInput
-              style={styles.input}
-              value={produto.nome}
-              onChangeText={(text) => setProduto({ ...produto, nome: text })}
-              placeholder="Nome do produto"
-            />
-            <Text>Preço do Produto</Text>
-            <TextInput
-              style={styles.input}
-              value={produto.preco ? produto.preco.toString() : ''}
-              onChangeText={(text) => setProduto({ ...produto, preco: parseFloat(text) || 0 })}
-              placeholder="Preço do produto"
-              keyboardType="numeric"
-            />
-            <Text>Descrição do Produto</Text>
-            <TextInput
-              style={styles.input}
-              value={produto.descricao}
-              onChangeText={(text) => setProduto({ ...produto, descricao: text })}
-              placeholder="Descrição do produto"
-            />
-            <Button
-              title={isEditing.editando ? 'Salvar Alterações' : 'Adicionar Produto'}
-              onPress={isEditing.editando ? salvarEdicao : adicionarProduto}
-            />
-            <Button
-              title="Cancelar"
-              onPress={() => {
-                setModalVisivel(false);
-                setIsEditing({ item: undefined, editando: false });
-                setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
-              }}
-            />
-          </View>
-        </View>
-      </Modal>
-    </View>
   );
 };
 
@@ -210,7 +216,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 18,
     color: '#fff',
-    flex: 1,
     marginRight: 10,
   },
   iconContainer: {
