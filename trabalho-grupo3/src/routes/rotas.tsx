@@ -1,27 +1,17 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useContext } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Login } from '../screens/LoginScreen';
-import { Cadastro } from '../screens/CadastroScreen';
-import { Home } from "../screens/HomeScreen/index"
-import { ProdutoScreen } from '../screens/ProdutoScreen';
+import { RootStackParamList } from '../types/rootStackParamList';
+import { AuthContext } from '../contexts/AuthContext';
+import PrivateRoutes from './PrivateRoutes';
+import PublicRoutes from './PublicRoutes';
 
-export type RootStackParamList = {
-    Login: undefined;
-    Cadastro: undefined;
-    Home: undefined;
-    Produtos: undefined;
-};
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function Rotas() {
-  return (
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen options={{ headerShown: false }} name="Login" component={Login} />
-        <Stack.Screen options={{ headerShown: false }} name="Cadastro" component={Cadastro} />
-        <Stack.Screen options={{ headerShown: false }} name="Home" component={Home}/>
-        <Stack.Screen options={{ headerShown: false }} name="Produtos" component={ProdutoScreen}/>
-      </Stack.Navigator>
-  );
-}
+  const {isLogged} : {isLogged:boolean} = useContext(AuthContext) ??{
+    isLogged:false,
+  };
+  return <>{!isLogged ? <PublicRoutes /> : <PrivateRoutes/>}</>;
 
+};
+export default Rotas;

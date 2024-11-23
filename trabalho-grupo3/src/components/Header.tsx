@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import axios from 'axios';
 import { CustomButton } from './CustomButton';
-import { RootStackParamList } from '../routes/rotas';
+import { RootStackParamList } from '../types/rootStackParamList';
 import { getUsuarios } from '../services/usuarioService';
 
 

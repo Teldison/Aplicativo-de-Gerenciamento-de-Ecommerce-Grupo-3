@@ -5,7 +5,7 @@ import { createProdutos, getProdutos, deleteProdutos, updateProdutos } from '../
 import { Produto, ProdutoEditado } from '../../types/types';
 import { CustomButton } from '../../components/CustomButton';
 
-export const ProdutoScreen = () => {
+export const ProdutoPrivateScreen = () => {
   const [produto, setProduto] = useState<Produto>({
     id: undefined,
     nome: '',

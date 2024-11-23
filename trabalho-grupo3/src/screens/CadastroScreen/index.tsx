@@ -8,7 +8,7 @@ import {
   ActivityIndicator 
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../routes/rotas";
+import { RootStackParamList } from "../../types/rootStackParamList";
 import axios from "axios";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Cadastro">;
