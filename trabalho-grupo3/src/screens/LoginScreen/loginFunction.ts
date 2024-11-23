@@ -1,3 +1,0 @@
-const logar = (data: any) =>{
-    
-}

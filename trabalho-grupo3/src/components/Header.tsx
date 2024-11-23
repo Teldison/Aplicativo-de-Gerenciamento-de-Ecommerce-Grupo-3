@@ -129,8 +129,6 @@ export const Header: React.FC = () => {
 };
 const styles = StyleSheet.create({
     container: {
-        paddingTop: 40,
-        backgroundColor: '#000000b9',
     },
     header: {
         flexDirection: 'row',

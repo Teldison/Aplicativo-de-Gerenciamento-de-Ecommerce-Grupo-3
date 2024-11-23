@@ -1,10 +1,10 @@
 import axios, { AxiosInstance } from "axios";
 
-const apiProdutos: AxiosInstance = axios.create({
+const api: AxiosInstance = axios.create({
     baseURL: "https://673f9791a9bc276ec4b90c2f.mockapi.io"
 });
 
-apiProdutos.interceptors.response.use(
+api.interceptors.response.use(
   response => response,
   error => {
     if (error.response) {
@@ -18,4 +18,4 @@ apiProdutos.interceptors.response.use(
     return Promise.reject(error); 
   }
 );
-export default apiProdutos;
+export default api;

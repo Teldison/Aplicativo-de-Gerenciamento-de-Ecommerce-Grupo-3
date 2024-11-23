@@ -13,64 +13,74 @@ import axios from "axios";
 import { RootStackParamList } from "../../types/rootStackParamList";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthContext } from "../../contexts/AuthContext";
-import usuarioService from "../../services/usuarioService";
+import usuarioService, { getUsuarios } from "../../services/usuarioService";
+import Usuario from "../../models/Usuario";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
-
-export const Login = ({ navigation }: Props) => {
-  const [usuario, setUsuario] = useState("");
-  const [senha, setSenha] = useState("");
-  const [loading, setLoading] = useState(false);
-  const {singIn} : any = useContext(AuthContext);
-
-  const fazerLogin = (data:any) => {
-    setLoading(true);
-    
-    usuarioService.login(data).then((resp:any) =>{
-      if(resp.status == 200){
-        singIn(resp.data[0])
-        Alert.alert("Login realizado com sucesso!", `Bem-vindo, ${data.usuario}`);
+ export const Login = ({ navigation }: Props) => {
+   const [usuario, setUsuario] = useState<string>(""); 
+   const [senha, setSenha] = useState<string>(""); 
+   const [loading, setLoading] = useState<boolean>(false); 
+   const { signIn }:any = useContext(AuthContext); 
+   
+   const fazerLogin = async () => { 
+      if (!usuario || !senha) {
+        Alert.alert('Atenção', 'Por favor, preencha todos os campos.');
+        return;
       }
-      else{
-        console.log("Erro ao realizar login!");
-        Alert.alert("Login ou senha estão incorretos");
+      setLoading(true);
+  
+      try {
+        const response = await getUsuarios();
+        const user = response.find(
+          (user: { usuario: string; senha: string }) =>
+            user.usuario === usuario && user.senha === senha
+        );
+  
+        if (user) {
+          Alert.alert('Login realizado com sucesso!', `Bem-vindo, ${user.usuario}`);
+          signIn();
+          navigation.navigate('Home');
+          return;
+        } else {
+          Alert.alert('Login ou senha estão incorretos');
+        }
       }
-    })
-    .catch((err)=>{
-      console.log("Erro: " , err);
-      Alert.alert("Erro de conexão com o servidor");
-    })
-    .finally(()=> {
-      setLoading(false);
-
-    })
-
-
-    
-  //   try {
-  //     const response = await axios.get("https://673c71de96b8dcd5f3fa1070.mockapi.io/cadastro");
-  //     const cadastro = response.data;
-
-  //     const user = cadastro.find(
-  //       (user: { usuario: string; senha: string }) => 
-  //         user.usuario === usuario && user.senha === senha
-  //     );
-
-  //     if (user) {
-  //       Alert.alert("Login realizado com sucesso!", `Bem-vindo, ${user.usuario}`);
-  //        // aqui carregar a proxima tela
-  //     } else {
-  //       Alert.alert("Login ou senha estão incorretos");
-  //     }
-  //   }
-  //   catch (err) {
-  //     Alert.alert("Erro de conexão com o servidor");
-  //   } 
-  //   finally {
-  //     setLoading(false);
-  //   }
+      catch (err) {
+        Alert.alert('Erro de conexão com o servidor');
+        console.error(err);
+      } 
+      finally {
+        setLoading(false);
+      }
   };
 
+  
+    //   setLoading(true); 
+  //   try { 
+  //     const user: Usuario | null = await usuarioService.login({ email: usuario, senha });
+      
+  //     if (user) {
+  //         signIn(user);
+  //         Alert.alert("Login realizado com sucesso!", `Bem-vindo, ${user}`); 
+  //         navigation.navigate("Home"); 
+  //     } 
+  //     else {
+  //        Alert.alert("Login ou senha estão incorretos");
+  //        } 
+  //     } 
+  //     catch (err) {
+  //         console.error("Erro ao fazer login: ", err);
+  //         Alert.alert("Erro de conexão com o servidor"); 
+  //     } 
+  //     finally {
+  //        setLoading(false);
+  //     }
+  
+      // const response = await axios.get("https://673c71de96b8dcd5f3fa1070.mockapi.io/cadastro");
+      // const response = await getUsuarios();
+      // const cadastro = response.data;
+      
   return (
     <View style={styles.container}>
       <TextInput

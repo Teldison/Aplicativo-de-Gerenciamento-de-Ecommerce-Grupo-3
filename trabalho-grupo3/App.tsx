@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Rotas } from './src/routes/rotas';
 import AuthProvider from './src/contexts/AuthContext';
 import * as SplashScreen from "expo-splash-screen"
+import { SafeAreaView } from 'react-native-safe-area-context';
+import NetworkStatus from './src/components/NetworkStatus/NetworkStatus';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,9 +28,10 @@ export default function App() {
   return (
     <NavigationContainer>
         <AuthProvider>
-          {/*adicionar  netInfo*/}
-            <Rotas/>
+          <NetworkStatus />
+          <Rotas/>
         </AuthProvider>
     </NavigationContainer>
+
   );
 }
