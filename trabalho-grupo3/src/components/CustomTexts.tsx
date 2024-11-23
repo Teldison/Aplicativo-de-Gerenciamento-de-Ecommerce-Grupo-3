@@ -14,9 +14,9 @@ export const CustomText = ({ text }: Texto) => {
 
 const style = StyleSheet.create({
     texto:{
-        flex:1,
+        height:"25%",
         textAlign:"center",
-        fontSize: 20,
+        fontSize: 45,
         fontWeight:"bold",
         
     }

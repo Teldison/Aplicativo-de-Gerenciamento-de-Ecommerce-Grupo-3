@@ -1,9 +1,17 @@
-import { Button, FlatList, Text, TextInput, TouchableOpacity, View, StyleSheet, Alert, Modal, ActivityIndicator } from 'react-native';
+import { Button, FlatList, Text, TextInput, TouchableOpacity, View, StyleSheet, Alert, Modal, ActivityIndicator, Image, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createProdutos, getProdutos, deleteProdutos, updateProdutos } from '../../services/produtoService';
 import { Produto, ProdutoEditado } from '../../types/types';
-import { CustomButton } from '../../components/CustomButton';
+
+// Importar imagens usando require
+
+const madeira = require('../../../assets/images/madeira.png');
+const imagem1 = require('../../../assets/images/imagem1.png');
+const imagem2 = require('../../../assets/images/imagem2.png');
+const imagem3 = require('../../../assets/images/imagem3.png');
+const imagem4 = require('../../../assets/images/imagem4.png');
+
 
 export const ProdutoPrivateScreen = () => {
   const [produto, setProduto] = useState<Produto>({
@@ -11,6 +19,7 @@ export const ProdutoPrivateScreen = () => {
     nome: '',
     preco: 0,
     descricao: '',
+    imagem: null
   });
   const [loading, setLoading] = useState(true);
   const [listaProdutos, setListaProdutos] = useState<Produto[]>([]);
@@ -19,6 +28,7 @@ export const ProdutoPrivateScreen = () => {
     editando: false,
   });
   const [modalVisivel, setModalVisivel] = useState(false);
+  const [modalImagensVisivel, setModalImagensVisivel] = useState(false);
   
   useEffect(() => {
     buscarProdutos();
@@ -48,7 +58,7 @@ export const ProdutoPrivateScreen = () => {
       const novoProdutoApi = await createProdutos(produto);
       setListaProdutos([...listaProdutos, novoProdutoApi]);
 
-      setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
+      setProduto({ id: undefined, nome: '', preco: 0, descricao: '', imagem: null });
       setModalVisivel(false);
       Alert.alert('Sucesso', 'Produto adicionado com sucesso!');
     } 
@@ -93,7 +103,7 @@ export const ProdutoPrivateScreen = () => {
         return item.id === produto.id ? produtoEditado : item;
       });
       setListaProdutos(listaAtualizada);
-      setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
+      setProduto({ id: undefined, nome: '', preco: 0, descricao: '', imagem: null });
       setIsEditing({
         item: undefined,
         editando: false,
@@ -106,93 +116,137 @@ export const ProdutoPrivateScreen = () => {
     }
   };
 
+  const selecionarImagem = (imagem: any) => {
+    setProduto({ ...produto, imagem });
+    setModalImagensVisivel(false);
+  };
+
   return (
     <View style={styles.container}>
-        <View style={styles.containerInput}>
-          <Button title="Adicionar Produto" onPress={() => {
-            setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
-            setIsEditing({ item: undefined, editando: false });
-            setModalVisivel(true);
-          }} 
-          />
-        </View>
-          {loading?
-          (<ActivityIndicator size="large" color="#000" />)
-          :(
-            <FlatList
-              style={styles.lista}
-              data={listaProdutos}
-              renderItem={({ item }) => (
-                <View style={styles.itemContainer}>
-                  <Text style={styles.itemText} numberOfLines={2}>
-                    {item.nome}
-                    {item.preco}
-                  </Text>
-                  <View style={styles.iconContainer}>
-                    <TouchableOpacity onPress={() => editarProduto(item)}>
-                      <FontAwesome name="pencil" size={24} color="white" />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => item.id !== undefined && deletarProduto(item.id)}>
-                      <FontAwesome name="trash-o" size={24} color="white" />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
-              keyExtractor={(item) => item.id?.toString() || Math.random().toString()} 
-            />)}
-
-        <Modal visible={modalVisivel} animationType='slide' transparent>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalConteudo}>
-              <Text>Nome do Produto</Text>
-              <TextInput
-                style={styles.input}
-                value={produto.nome}
-                onChangeText={(text) => setProduto({ ...produto, nome: text })}
-                placeholder="Nome do produto"
-              />
-              <Text>Preço do Produto</Text>
-              <TextInput
-                style={styles.input}
-                value={produto.preco ? produto.preco.toString() : ''}
-                onChangeText={(text) => setProduto({ ...produto, preco: parseFloat(text) || 0 })}
-                placeholder="Preço do produto"
-                keyboardType="numeric"
-              />
-              <Text>Descrição do Produto</Text>
-              <TextInput
-                style={styles.input}
-                value={produto.descricao}
-                onChangeText={(text) => setProduto({ ...produto, descricao: text })}
-                placeholder="Descrição do produto"
-              />
-              <Button
-                title={isEditing.editando ? 'Salvar Alterações' : 'Adicionar Produto'}
-                onPress={isEditing.editando ? salvarEdicao : adicionarProduto}
-              />
-              <Button
-                title="Cancelar"
-                onPress={() => {
-                  setModalVisivel(false);
-                  setIsEditing({ item: undefined, editando: false });
-                  setProduto({ id: undefined, nome: '', preco: 0, descricao: '' });
-                }}
-              />
+      <FlatList
+        style={styles.lista}
+        data={listaProdutos}
+        renderItem={({ item }) => (
+          <View style={styles.itemContainer}>
+          <Image source={madeira} style={styles.backgroundImage} />
+          {item.imagem ? (
+            <Image source={item.imagem} style={styles.imagemProduto} />
+          ) : (
+            <View style={styles.semImagem}>
+              <Text style={styles.semImagemTexto}>Sem imagem</Text>
             </View>
+          )}
+          <Text style={styles.itemNome} numberOfLines={1}>
+            {item.nome}
+          </Text>
+          <Text style={styles.itemPreco} numberOfLines={1}>
+            R$ {item.preco.toFixed(2)}
+          </Text>
+          <View style={styles.iconContainer}>
+            <TouchableOpacity onPress={() => editarProduto(item)}>
+              <FontAwesome name="pencil" size={30} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => item.id !== undefined && deletarProduto(item.id)}>
+              <FontAwesome name="trash-o" size={30} color="white" />
+            </TouchableOpacity>
           </View>
-        </Modal>
+        </View>
+        
+        )}
+        keyExtractor={(item) => item.id?.toString() || Math.random().toString()} 
+      />
+      <View style={styles.containerButton}>
+        <Button title="Adicionar Produto" onPress={() => {
+          setProduto({ id: undefined, nome: '', preco: 0, descricao: '', imagem: null });
+          setIsEditing({ item: undefined, editando: false });
+          setModalVisivel(true);
+        }} 
+        />
       </View>
 
+      <Modal visible={modalVisivel} animationType='slide' transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalConteudo}>
+            <Text>Nome do Produto</Text>
+            <TextInput
+              style={styles.input}
+              value={produto.nome}
+              onChangeText={(text) => setProduto({ ...produto, nome: text })}
+              placeholder="Nome do produto"
+            />
+            <Text>Preço do Produto</Text>
+            <TextInput
+              style={styles.input}
+              value={produto.preco ? produto.preco.toString() : ''}
+              onChangeText={(text) => setProduto({ ...produto, preco: parseFloat(text) || 0 })}
+              placeholder="Preço do produto"
+              keyboardType="numeric"
+            />
+            <Text>Descrição do Produto</Text>
+            <TextInput
+              style={styles.input}
+              value={produto.descricao}
+              onChangeText={(text) => setProduto({ ...produto, descricao: text })}
+              placeholder="Descrição do produto"
+            />
+            <Button title="Selecionar Imagem" onPress={() => setModalImagensVisivel(true)} />
+            {produto.imagem ? (
+              <Image source={produto.imagem} style={styles.previewImagem} />
+            ) : null}
+            <Button
+              title={isEditing.editando ? 'Salvar Alterações' : 'Adicionar Produto'}
+              onPress={isEditing.editando ? salvarEdicao : adicionarProduto}
+            />
+            <Button
+              title="Cancelar"
+              onPress={() => {
+                setModalVisivel(false);
+                setIsEditing({ item: undefined, editando: false });
+                setProduto({ id: undefined, nome: '', preco: 0, descricao: '', imagem: null });
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={modalImagensVisivel} animationType='slide' transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalImagensConteudo}>
+            <ScrollView>
+           
+              <TouchableOpacity onPress={() => selecionarImagem(imagem1)}>
+                <Image source={imagem1} style={styles.previewImagem} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => selecionarImagem(imagem2)}>
+                <Image source={imagem2} style={styles.previewImagem} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => selecionarImagem(imagem3)}>
+                <Image source={imagem3} style={styles.previewImagem} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => selecionarImagem(imagem4)}>
+                <Image source={imagem4} style={styles.previewImagem} />
+              </TouchableOpacity>
+
+            </ScrollView>
+            <Button title="Cancelar" onPress={() => setModalImagensVisivel(false)} />
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    marginTop: 50
+    padding: 19,
+    marginTop: 0,
+    justifyContent: 'flex-end',
+    backgroundColor: '#6e2900', 
   },
-  containerInput: {},
+  containerButton: {
+    marginBottom: 16,
+  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -202,25 +256,65 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   lista: {
-    marginTop: 8,
+    flex: 1,
+    marginTop: 28,
   },
   itemContainer: {
-    flexDirection: 'row',
-    backgroundColor: 'steelblue',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 16,
     marginBottom: 8,
     borderRadius: 8,
+    aspectRatio: 1,
+    borderWidth: 2,
+    borderColor: '#3b1e00',
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+    overflow: 'hidden', 
+    position: 'relative', 
   },
-  itemText: {
+  imagemProduto: {
+    width: '100%',
+    height: '70%',
+    borderRadius: 8,
+    resizeMode: 'contain', 
+  },
+  semImagem: {
+    width: '100%',
+    height: '70%',
+    borderRadius: 8,
+    backgroundColor: '#ccc',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  semImagemTexto: {
+    color: '#999',
+  },
+  itemNome: {
     fontWeight: '500',
-    fontSize: 18,
+    fontSize: 28,
     color: '#fff',
-    marginRight: 10,
+    marginTop: 10,
+    fontFamily: 'Georgia', 
+  },
+  itemPreco: {
+    fontWeight: '500',
+    fontSize: 20,
+    color: '#fff',
+    marginTop: 5,
+    fontFamily: 'Georgia', 
   },
   iconContainer: {
     flexDirection: 'row',
     gap: 10,
+    marginTop: 10,
+  },
+  iconButton: {
+    marginHorizontal: 10, 
   },
   modalContainer: {
     flex: 1,
@@ -233,5 +327,26 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 35,
     elevation: 5,
+  },
+  modalImagensConteudo: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    elevation: 5,
+  },
+  previewImagem: {
+    width: '100%',
+    height: 200,
+    marginVertical: 10,
+  },
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '110%',
+    height: '110%',
+    resizeMode: 'cover', 
+    borderRadius: 8,
   },
 });

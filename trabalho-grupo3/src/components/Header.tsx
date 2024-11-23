@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import axios from 'axios';
 import { CustomButton } from './CustomButton';
 import { RootStackParamList } from '../types/rootStackParamList';
 import { getUsuarios } from '../services/usuarioService';
+import { AuthContext } from '../contexts/AuthContext';
 
 
 export const Header: React.FC = () => {
@@ -23,6 +24,7 @@ export const Header: React.FC = () => {
   const [usuario, setUsuario] = useState<string>('');
   const [senha, setSenha] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const { signIn }:any = useContext(AuthContext);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -73,6 +75,7 @@ export const Header: React.FC = () => {
           <Text style={styles.title}>Bebidas</Text>
           <Text style={styles.title}>Show</Text>
         </View>
+        {}
         <TouchableOpacity style={styles.iconButton} onPress={() => setModalVisible(true)}>
           <Ionicons name="person" size={24} color="white" />
         </TouchableOpacity>
@@ -107,7 +110,7 @@ export const Header: React.FC = () => {
                     <ActivityIndicator size="large" color="#000" />
                   ) : (
                     <CustomButton
-                      title="Login"
+                      title="Entrar"
                       onPress={fazerLogin}
                     />
                   )}

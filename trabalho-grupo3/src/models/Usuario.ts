@@ -5,6 +5,5 @@ interface Usuario{
     senha: string,
     dataNascimento: Date,
     status: boolean,
-    tipoUsuario: string,
 }
 export default Usuario;

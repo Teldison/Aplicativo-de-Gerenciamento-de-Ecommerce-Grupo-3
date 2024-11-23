@@ -43,7 +43,7 @@ export const Cadastro = ({ navigation }: Props) => {
 
       if (response.status === 201) {
         Alert.alert("Usuário cadastrado com sucesso!");
-        navigation.navigate("Login"); // Volta para a tela de Login.
+        navigation.navigate("Home");
       } else {
         Alert.alert("Erro ao cadastrar", response.data.message || "Erro desconhecido");
       }
