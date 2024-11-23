@@ -13,6 +13,7 @@ export type Produto ={
     nome: string;
     preco: number;
     descricao: string;
+    imagem: null;
 };
 export type ProdutoEditado = {
     item: Produto  | undefined;
