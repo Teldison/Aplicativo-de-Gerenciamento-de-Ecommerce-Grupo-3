@@ -1,6 +1,7 @@
 export interface User {
-    id?: number;
-    usuario: string;
+    id?: number | undefined;
+    nome: string;
+    email: string;
     senha: string;
 };
 export type UserEditado = {
@@ -9,7 +10,7 @@ export type UserEditado = {
 }
 
 export type Produto ={
-    id?: number;
+    id?: number | undefined;
     nome: string;
     preco: number;
     descricao: string;

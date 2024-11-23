@@ -22,13 +22,14 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 30,
         borderRadius: 10,
+        marginTop:10,
         alignItems: 'center',
         justifyContent: 'center',
         borderColor: '#5A2D0C',
     },
     title: {
         color: '#000000',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
     },
 })

@@ -1,36 +1,28 @@
 import { Children, createContext, useState, ReactNode } from "react";
-import Usuario from "../models/Usuario";
-
-
-export interface AuthContextData{
-    isLogged: boolean;
-    user: Usuario;
-    singIn(usuario: Usuario) :Promise<void>;
-    logOut(): void;
-}
+import { User } from "../types/types";
+import { AuthContextData } from "../types/authTypes";
 
 
 export const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
-const AuthProvider = ({children} : {children : ReactNode}) =>{
+export const AuthProvider = ({children} : {children : ReactNode}) =>{
+    const [isLogged, setIsLogged] = useState(false);
     const [user, setUser] = useState<any>(null);
-    const [isLogged, setIsLogged] = useState<any>(false);
 
-    const singIn = async (usuario : Usuario) => {
-        setUser(usuario);
+    const singIn = (usuario : User) => {
         setIsLogged(true);
-        return Promise.resolve();
+        setUser(usuario);
+        console.log("Chegou no login")
     }
 
-    const logOut = () => {
-        setUser(null);
+    const singOut = () => {
         setIsLogged(false);
+        setUser(null);
     }
 
     return(
-        <AuthContext.Provider value={{isLogged, user, singIn, logOut}}>
+        <AuthContext.Provider value={{isLogged, user, singIn, singOut}}>
             {children}
         </AuthContext.Provider>
     )
 }
-export default AuthProvider;

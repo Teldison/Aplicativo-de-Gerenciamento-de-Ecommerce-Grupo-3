@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,11 +12,12 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import axios from 'axios';
 import { CustomButton } from './CustomButton';
 import { RootStackParamList } from '../types/rootStackParamList';
-import { getUsuarios } from '../services/usuarioService';
+import { getUsuarios} from '../services/usuarios/usuarioService';
+import { User } from '../types/types';
 import { AuthContext } from '../contexts/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export const Header: React.FC = () => {
@@ -24,9 +25,20 @@ export const Header: React.FC = () => {
   const [usuario, setUsuario] = useState<string>('');
   const [senha, setSenha] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const { signIn }:any = useContext(AuthContext);
-
+  const authContext = useContext(AuthContext);
+  const [user, setUser] = useState<any>(null);
+  
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await AsyncStorage.getItem('user');
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    };
+    loadUser();
+  }, []);
 
   const closeModal = () => {
     setModalVisible(false);
@@ -42,27 +54,35 @@ export const Header: React.FC = () => {
 
     setLoading(true);
     try {
-        // const response = await getUsuarios();
-        const response = await axios.get('https://673c71de96b8dcd5f3fa1070.mockapi.io/cadastro');
-        const cadastro = response.data as { usuario: string; senha: string }[];
-
-      const user = cadastro.find(
-        (user) => user.usuario === usuario && user.senha === senha
+      const response = await getUsuarios();
+      const user = response.find(
+        (user: { nome: string; senha: string }) =>
+          user.nome === usuario && user.senha === senha
       );
-      if (!user){
+
+      if (!user) {
         Alert.alert('Erro', 'Usuário ou senha incorretos.');
-      }
-      if (user) {
-        Alert.alert('Sucesso', `Bem-vindo, ${user.usuario}!`);
+      } else {
+        Alert.alert('Sucesso', `Bem-vindo, ${user.nome}!`);
+        console.log('Usuario logado: ' + user.nome);
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+        setUser(user);
         closeModal();
       }
-    } 
-    catch (err) {
+    } catch (err) {
       Alert.alert('Erro', 'Não foi possível conectar ao servidor.');
+      console.error(err);
     } 
     finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('user');
+    setUser(null);
+    closeModal();
+    Alert.alert("Sucesso","Usuário deslogado com sucesso")
   };
 
   return (
@@ -75,9 +95,12 @@ export const Header: React.FC = () => {
           <Text style={styles.title}>Bebidas</Text>
           <Text style={styles.title}>Show</Text>
         </View>
-        {}
         <TouchableOpacity style={styles.iconButton} onPress={() => setModalVisible(true)}>
-          <Ionicons name="person" size={24} color="white" />
+          {user?(
+            <Ionicons name="person-circle" size={35} color="white" />
+          ):(
+            <Ionicons name="person-add" size={30} color="white" />
+          )}
         </TouchableOpacity>
       </View>
 
@@ -91,37 +114,50 @@ export const Header: React.FC = () => {
           <View style={styles.modalContainer}>
             <TouchableWithoutFeedback>
               <View style={styles.modalView}>
-                <Text style={styles.modalTitle}>Entre na sua conta!</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Usuário"
-                    value={usuario}
-                    onChangeText={setUsuario}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Senha"
-                  secureTextEntry={true}
-                  value={senha}
-                  onChangeText={setSenha}
-                />
-                <View style={styles.buttonContainer}>
-                  {loading ? (
-                    <ActivityIndicator size="large" color="#000" />
-                  ) : (
-                    <CustomButton
-                      title="Entrar"
-                      onPress={fazerLogin}
+                {user ?(
+                  <>
+                    <Ionicons name="person-circle" size={40} color="black" />
+                    <Text style={styles.modalTitle}>Informações do Usuário</Text>
+
+                    <Text style={styles.userInfo}>Nome: <Text style={styles.userInfoHighlight}>{user.usuario}</Text></Text>
+                    <Text style={styles.userInfo}>Email: <Text style={styles.userInfoHighlight}>{user.email}</Text></Text>
+                    <CustomButton title="Sair" onPress={handleLogout} />
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.modalTitle}>Entre na sua conta!</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Usuário"
+                      value={usuario}
+                      onChangeText={setUsuario}
                     />
-                  )}
-                  <CustomButton
-                    title="Cadastro"
-                    onPress={() => {
-                      closeModal();
-                      navigation.navigate('Cadastro');
-                    }}
-                  />
-                </View>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Senha"
+                      secureTextEntry={true}
+                      value={senha}
+                      onChangeText={setSenha}
+                    />
+                    <View>
+                      {loading ? (
+                        <ActivityIndicator size="large" color="#000" />
+                      ) : (
+                        <CustomButton
+                          title="Entrar"
+                          onPress={fazerLogin}
+                        />
+                      )}
+                      <CustomButton
+                        title="Cadastro"
+                        onPress={() => {
+                          closeModal();
+                          navigation.navigate('Cadastro');
+                        }}
+                      />
+                    </View>
+                  </>
+                )}
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -165,9 +201,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 15,
+        marginBottom: 20,
+    },
+    userInfo:{
+      fontSize:16,
+      marginBottom:10,
+    },
+    userInfoHighlight: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#000',
     },
     input: {
         width: '100%',
@@ -177,11 +222,5 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginBottom: 15,
         paddingHorizontal: 10,
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        marginTop: 10,
     },
 });

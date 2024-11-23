@@ -13,25 +13,28 @@ const NetworkStatus = () => {
     return () => unsubscribe();
   }, []);
 
+  if (isConnected === null || isConnected) {
+    return null;
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.status}>
-        {!isConnected ?
-           "Sem Conexão com a Internet":"aaa"}
+        SEM CONEXÃO COM INTERNET
       </Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#362217',
+  container:{
+    backgroundColor: 'red',
+    padding:20,
   },
   status: {
+    textAlign:"center",
+    alignSelf:"center",
     fontSize: 18,
-    color:"red",
+    color:"#ffffff",
     fontWeight: 'bold',
   },
 });

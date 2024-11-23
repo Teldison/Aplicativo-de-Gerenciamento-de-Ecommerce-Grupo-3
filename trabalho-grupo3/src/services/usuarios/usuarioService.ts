@@ -1,4 +1,4 @@
-import { User } from "../types/types";
+import { User } from "../../types/types";
 import api from "./apiUsuarios";
 
 const login = async (usuario: { email: string; senha: string; }): Promise<User | null> => {
@@ -8,7 +8,8 @@ const login = async (usuario: { email: string; senha: string; }): Promise<User |
       return data[0];
     }
     return null;
-  } catch (err) {
+  } 
+  catch (err) {
     console.error("Erro ao tentar fazer login:", err);
     throw new Error("Erro de conexão com o servidor");
   }

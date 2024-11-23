@@ -1,7 +1,7 @@
 import { Button, FlatList, Text, TextInput, TouchableOpacity, View, StyleSheet, Alert, Modal, ActivityIndicator, Image, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { createProdutos, getProdutos, deleteProdutos, updateProdutos } from '../../services/produtoService';
+import { createProdutos, getProdutos, deleteProdutos, updateProdutos } from '../../services/produtos/produtoService';
 import { Produto, ProdutoEditado } from '../../types/types';
 
 // Importar imagens usando require
