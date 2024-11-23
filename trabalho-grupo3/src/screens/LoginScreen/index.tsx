@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { 
   Alert, 
   Button, 
@@ -14,52 +14,58 @@ import { RootStackParamList } from "../../types/rootStackParamList";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthContext } from "../../contexts/AuthContext";
 import usuarioService, { getUsuarios } from "../../services/usuarios/usuarioService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
  
 export const Login = ({ navigation }: Props) => {
-   const [usuario, setUsuario] = useState<string>(""); 
-   const [senha, setSenha] = useState<string>(""); 
-   const [loading, setLoading] = useState<boolean>(false); 
-   const authContext = useContext(AuthContext);
-   
-  if(!AuthContext){
-    console.error("O AuthContext deve ser usando dentro de um provider")
-  }
+  const [usuario, setUsuario] = useState<string>('');
+  const [senha, setSenha] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [user, setUser] = useState<any>(null);
+  const authContext = useContext(AuthContext);
+  
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await AsyncStorage.getItem('user');
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    };
+    loadUser();
+  }, []);
 
   const fazerLogin = async () => {
-  if(!usuario || !senha){
-    Alert.alert('Atenção', 'Por favor, preencha todos os campos.');
-    return;
-  }
-  
-  setLoading(true);
-
-  try {
-    // const response = await axios.get("https://673c71de96b8dcd5f3fa1070.mockapi.io/cadastro");
-    const response = await getUsuarios();
-
-    const user = response.find(
-      (user: { nome: string; senha: string }) => 
-        user.nome === usuario && user.senha === senha
-    );
-
-    if (user) {
-      Alert.alert("Login realizado com sucesso!", `Bem-vindo, ${user.nome}`);
-      navigation.navigate("Home");
+    if (!usuario || !senha) {
+      Alert.alert('Atenção', 'Por favor, preencha todos os campos.');
       return;
-    } else {
-      Alert.alert("Login ou senha estão incorretos");
     }
-  }
-  catch (err) {
-    Alert.alert("Erro de conexão com o servidor");
-    console.log(err);
-  } 
-  finally {
-    setLoading(false);
-  }
-};
+
+    setLoading(true);
+    try {
+      const response = await getUsuarios();
+      const user = response.find(
+        (user: { nome: string; senha: string }) =>
+          user.nome === usuario && user.senha === senha
+      );
+
+      if (!user) {
+        Alert.alert('Erro', 'Usuário ou senha incorretos.');
+      } else {
+        Alert.alert('Sucesso', `Bem-vindo, ${user.nome}!`);
+        console.log('Usuario logado: ' + user.nome);
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+        authContext?.singIn(user);
+      }
+    } catch (err) {
+      Alert.alert('Erro', 'Não foi possível conectar ao servidor.');
+      console.error(err);
+    } 
+    finally {
+      setLoading(false);
+    }
+  };
   
   return (
     <View style={styles.container}>

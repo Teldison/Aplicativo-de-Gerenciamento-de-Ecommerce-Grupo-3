@@ -14,10 +14,10 @@ export const CustomText = ({ text }: Texto) => {
 
 const style = StyleSheet.create({
     texto:{
-        height:"25%",
+        padding:10,
         textAlign:"center",
-        fontSize: 45,
+        fontSize: 35,
         fontWeight:"bold",
-        
+        textTransform:"capitalize",
     }
 })

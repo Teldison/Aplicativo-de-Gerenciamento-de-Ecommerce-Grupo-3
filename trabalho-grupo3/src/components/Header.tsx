@@ -15,7 +15,6 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { CustomButton } from './CustomButton';
 import { RootStackParamList } from '../types/rootStackParamList';
 import { getUsuarios} from '../services/usuarios/usuarioService';
-import { User } from '../types/types';
 import { AuthContext } from '../contexts/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -25,9 +24,8 @@ export const Header: React.FC = () => {
   const [usuario, setUsuario] = useState<string>('');
   const [senha, setSenha] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const authContext = useContext(AuthContext);
   const [user, setUser] = useState<any>(null);
-  
+  const authContext = useContext(AuthContext);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   
   useEffect(() => {
@@ -66,7 +64,7 @@ export const Header: React.FC = () => {
         Alert.alert('Sucesso', `Bem-vindo, ${user.nome}!`);
         console.log('Usuario logado: ' + user.nome);
         await AsyncStorage.setItem('user', JSON.stringify(user));
-        setUser(user);
+        authContext?.singIn(user);
         closeModal();
       }
     } catch (err) {
@@ -80,6 +78,7 @@ export const Header: React.FC = () => {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('user');
+    authContext?.singOut();
     setUser(null);
     closeModal();
     Alert.alert("Sucesso","Usuário deslogado com sucesso")
@@ -139,7 +138,7 @@ export const Header: React.FC = () => {
                       value={senha}
                       onChangeText={setSenha}
                     />
-                    <View>
+                    <View style={styles.buttonContainer}>
                       {loading ? (
                         <ActivityIndicator size="large" color="#000" />
                       ) : (
@@ -222,5 +221,11 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginBottom: 15,
         paddingHorizontal: 10,
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      marginTop: 10,
     },
 });
