@@ -69,12 +69,17 @@ export const Login = ({ navigation }: Props) => {
   
   return (
     <View style={styles.container}>
+      <Text style={styles.textoForm}>Seja Bem-vindo(a)</Text>
       <TextInput
+        style={styles.input}
+        placeholderTextColor="#AAA"
         placeholder="Usuário"
         value={usuario}
         onChangeText={setUsuario}
       />
       <TextInput
+        style={styles.input}
+        placeholderTextColor="#AAA"
         placeholder="Senha"
         secureTextEntry
         value={senha}
@@ -83,7 +88,9 @@ export const Login = ({ navigation }: Props) => {
       {loading ? (
         <ActivityIndicator size="large" color="#000" />
       ) : (
-        <Button title="Entrar" onPress={fazerLogin}/>
+        <TouchableOpacity style={styles.button} onPress={fazerLogin}>
+        <Text style={styles.buttonText}>Entrar</Text>
+        </TouchableOpacity>
       )}
       <TouchableOpacity onPress={() => navigation.navigate("Cadastro")}>
         <Text style={styles.cadastrar}>Ainda não tem conta? Cadastre-se</Text>
@@ -96,13 +103,44 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 16,
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#6e2900",
   },
   cadastrar: {
-    marginTop: 20,
-    color: "blue",
+    color: "#bbb",
     textAlign: "center",
     textDecorationLine: "underline",
     fontSize: 16,
+  },
+  input: {
+    width: "100%",
+    height: 50,
+    backgroundColor: "#292929",
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    fontSize: 16,
+    color: "#fff",
+  },
+  button: {
+    backgroundColor: "#FF6F61",
+    borderRadius: 8,
+    height: 50,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  textoForm: {
+    fontSize: 24,    
+    marginBottom: 24,
+    fontWeight: "bold",
+    color: "#fff"
   },
 });

@@ -5,7 +5,9 @@ import {
   TextInput, 
   View, 
   StyleSheet, 
-  ActivityIndicator 
+  ActivityIndicator,
+  Text, 
+  TouchableOpacity
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../types/rootStackParamList";
@@ -56,21 +58,25 @@ export const Cadastro = ({ navigation }: Props) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.textoForm}>Crie sua conta</Text>
       <TextInput
         style={styles.input}
         placeholder="Nome"
+        placeholderTextColor="#AAA"
         value={nome}
         onChangeText={setNome}
       />
       <TextInput
         style={styles.input}
         placeholder="Usuário"
+        placeholderTextColor="#AAA"
         value={usuario}
         onChangeText={setUsuario}
       />
       <TextInput
         style={styles.input}
         placeholder="E-mail"
+        placeholderTextColor="#AAA"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -78,6 +84,7 @@ export const Cadastro = ({ navigation }: Props) => {
       <TextInput
         style={styles.input}
         placeholder="Senha"
+        placeholderTextColor="#AAA"
         secureTextEntry
         value={senha}
         onChangeText={setSenha}
@@ -85,6 +92,7 @@ export const Cadastro = ({ navigation }: Props) => {
       <TextInput
         style={styles.input}
         placeholder="Confirmar Senha"
+        placeholderTextColor="#AAA"
         secureTextEntry
         value={confirmaSenha}
         onChangeText={setConfirmaSenha}
@@ -92,8 +100,13 @@ export const Cadastro = ({ navigation }: Props) => {
       {loading ? (
         <ActivityIndicator size="large" color="#000" />
       ) : (
-        <Button title="Cadastrar" onPress={fazerCadastro} />
+        <TouchableOpacity style={styles.button} onPress={fazerCadastro}>
+          <Text style={styles.buttonText}>Cadastrar</Text>
+        </TouchableOpacity>
       )}
+      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+        <Text style={styles.loginText}>Já possui conta? Faça login</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -103,12 +116,44 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
+    backgroundColor: "#6e2900",
+    alignItems: "center"
   },
   input: {
-    borderWidth: 1,
+    width: "100%",
+    height: 50,
+    backgroundColor: "#2C2C3A",
+    color: "#fff",
+    borderRadius: 8,
+    paddingHorizontal: 16,
     marginBottom: 16,
-    padding: 8,
-    borderRadius: 4,
-    borderColor: "#ccc",
+    borderWidth: 1,
+    borderColor: "#444"
   },
+  textoForm: {
+    fontSize: 24,    
+    marginBottom: 24,
+    fontWeight: "bold",
+    color: "#fff"
+  },
+  button: {
+    width: "100%",
+    height: 50,
+    backgroundColor: "#FF6F61",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+    marginTop: 8    
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold"
+  },
+  loginText: {
+    marginTop: 16,
+    color: "#bbb",
+    fontSize: 14,
+    textDecorationLine: "underline"
+  }
 });
