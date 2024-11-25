@@ -153,35 +153,34 @@ export const ProdutoScreen = () => {
       />
       <FlatList
         style={styles.lista}
-        data={listaProdutos}
+        data={searchTerm ? filteredProducts : listaProdutos}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
-          <Image source={madeira} style={styles.backgroundImage} />
-          {item.imagem ? (
-            <Image source={item.imagem} style={styles.imagemProduto} />
-          ) : (
-            <View style={styles.semImagem}>
-              <Text style={styles.semImagemTexto}>Sem imagem</Text>
+            <Image source={madeira} style={styles.backgroundImage} />
+            {item.imagem ? (
+              <Image source={item.imagem} style={styles.imagemProduto} />
+            ) : (
+              <View style={styles.semImagem}>
+                <Text style={styles.semImagemTexto}>Sem imagem</Text>
+              </View>
+            )}
+            <Text style={styles.itemNome} numberOfLines={1}>
+              {item.nome}
+            </Text>
+            <Text style={styles.itemPreco} numberOfLines={1}>
+              R$ {item.preco.toFixed(2)}
+            </Text>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity onPress={() => editarProduto(item)}>
+                <FontAwesome name="pencil" size={30} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => item.id !== undefined && deletarProduto(item.id)}>
+                <FontAwesome name="trash" size={30} color="white" />
+              </TouchableOpacity>
             </View>
-          )}
-          <Text style={styles.itemNome} numberOfLines={1}>
-            {item.nome}
-          </Text>
-          <Text style={styles.itemPreco} numberOfLines={1}>
-            R$ {item.preco.toFixed(2)}
-          </Text>
-          <View style={styles.iconContainer}>
-            <TouchableOpacity onPress={() => editarProduto(item)}>
-              <FontAwesome name="pencil" size={30} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => item.id !== undefined && deletarProduto(item.id)}>
-              <FontAwesome name="trash" size={30} color="white" />
-            </TouchableOpacity>
           </View>
-        </View>
-        
         )}
-        keyExtractor={(item) => item.id?.toString() || Math.random().toString()} 
+        keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
       />
       <View style={styles.containerButton}>
         <CustomButton
@@ -246,7 +245,7 @@ export const ProdutoScreen = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalImagensConteudo}>
             <ScrollView>
-           
+              
               <TouchableOpacity onPress={() => selecionarImagem(imagem1)}>
                 <Image source={imagem1} style={styles.previewImagem} />
               </TouchableOpacity>
@@ -284,11 +283,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
+    margin: 10,
+    borderRadius: 10,
     backgroundColor: '#ffffff',
-    marginBottom: 6,
     padding: 8,
   },
   lista: {

@@ -21,7 +21,20 @@ export type RootStackParamList = {
 
 function DrawerNavigator() {
     return (
-      <Drawer.Navigator screenOptions={{headerShown: false,}}>
+      <Drawer.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          drawerStyle: {
+            backgroundColor: '#6e2900', 
+            width: 240, 
+          },
+          drawerLabelStyle: {
+            fontSize: 18,
+            color: 'white',
+          },
+          headerShown: false,
+        }}
+      >
         <Drawer.Screen name="Home" component={Home} />
         <Drawer.Screen name="Sobre" component={Sobre} />
       </Drawer.Navigator>

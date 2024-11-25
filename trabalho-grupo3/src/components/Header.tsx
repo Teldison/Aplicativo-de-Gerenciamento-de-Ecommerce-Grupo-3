@@ -170,14 +170,14 @@ export const Header: React.FC = () => {
 
 const styles = StyleSheet.create({
   top: {
-    backgroundColor: '#000000c8',
+    backgroundColor: '#141414',
     height: 20,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#000000c8',
+    backgroundColor: '#000000',
     padding: 10,
   },
   marca: {

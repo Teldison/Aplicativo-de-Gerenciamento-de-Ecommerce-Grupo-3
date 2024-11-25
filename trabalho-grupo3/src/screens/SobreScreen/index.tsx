@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { Header } from '../../components/Header';
 import { CustomText } from '../../components/CustomTexts';
 
@@ -11,15 +11,19 @@ const adm5 = require('../../../assets/mateus.jpg');
 const adm6 = require('../../../assets/samuel.jpg');
 
 const administradores = [
-  { id: 1, nome: 'Lucas Coco', imagem: adm1},
-  { id: 2, nome: 'Vinicius Ramos', imagem: adm2},
-  { id: 3, nome: 'Heytor Cantelmo', imagem: adm3},
-  { id: 4, nome: 'Rafael Januzzi ', imagem: adm4},
+  { id: 1, nome: 'Lucas Coco', imagem: adm1, link: 'https://www.linkedin.com/in/lucas-c-071903265/' },
+  { id: 2, nome: 'Vinicius Ramos', imagem: adm2, link:"www.linkedin.com/in/vinícius-ramos-pimenta-639955261 "},
+  { id: 3, nome: 'Heytor Cantelmo', imagem: adm3, link:"https://www.linkedin.com/in/heytor-cantelmo-2468a0329/"},
+  { id: 4, nome: 'Rafael Januzzi ', imagem: adm4, link: "https://www.linkedin.com/in/rafael-januzzi-52719416b/ "},
   { id: 5, nome: 'Mateus Azevedo', imagem: adm5},
-  { id: 6, nome: 'Samuel Teldison', imagem: adm6},
+  { id: 6, nome: 'Samuel Teldison', imagem: adm6, link: "https://www.linkedin.com/in/samuel-teldison-serafim-silva-de-oliveira-89939a1a3/ "},
 ];
 
 export function Sobre() {
+  const handlePress = (link: string) => {
+    Linking.openURL(link);
+  };
+  
   return (
     <>
       <Header/>
@@ -38,22 +42,22 @@ export function Sobre() {
         <Text style={styles.subtitle}>Nossos Administradores</Text>
         <View style={styles.administradoresContainer}>
           {administradores.map((adm) => (
-            <View key={adm.id} style={styles.administradorCard}>
-              <Image source={adm.imagem} style={styles.admImage} />
-              <Text style={styles.admName}>{adm.nome}</Text>
-            </View>
+            <TouchableOpacity key={adm.id} onPress={() => adm.link && handlePress(adm.link)}>
+              <View style={styles.administradorCard}>
+                <Image source={adm.imagem} style={styles.admImage} />
+                <Text style={styles.admName}>{adm.nome}</Text>
+              </View>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
-    </>
-  );
-}
+    </>
+)};
 
 const styles = StyleSheet.create({
   sobreContainer: {
     padding: 16,
-    backgroundColor: '#3b2112',
-    flexGrow: 1,
+    backgroundColor: '#6e2900',
   },
   title: {
     marginTop: 14,
@@ -70,6 +74,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   subtitle: {
+    textAlign: 'center',
     marginTop: 24,
     fontSize: 20,
     fontWeight: 'bold',
@@ -82,8 +87,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   administradorCard: {
-    width: '48%',
-    backgroundColor: '#6e2900',
+    width: 150,
+    height: 200,
+    backgroundColor: '#3b2112',
     borderRadius: 16,
     padding: 20,
     marginBottom: 20,

@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#6e2900",
     },
     naoLogado:{
-        flex:0.9,
+        flex:0.3,
         justifyContent: "center",
         alignItems: "center",        margin:10,
     },
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     logado:{
-        flex:0.5,
+        flex:0.3,
         justifyContent: "center",
         alignItems: "center",
     },

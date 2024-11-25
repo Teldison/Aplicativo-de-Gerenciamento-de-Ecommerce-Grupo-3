@@ -3,10 +3,8 @@ import { createNativeStackNavigator, NativeStackNavigationProp, NativeStackScree
   import { Login } from "../screens/LoginScreen";
   import { Cadastro } from "../screens/CadastroScreen";
 import { Home } from "../screens/HomeScreen";
-import { ProdutoScreen } from "../screens/ProdutoScreen";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Sobre } from "../screens/SobreScreen";
-import { NavigationContainer } from "@react-navigation/native";
   
 export type RootStackParamList = {
   Login: undefined;
@@ -20,7 +18,20 @@ const Drawer = createDrawerNavigator();
 
 function DrawerNavigator() {
 return (
-  <Drawer.Navigator screenOptions={{headerShown: false,}}>
+    <Drawer.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          drawerStyle: {
+            backgroundColor: '#6e2900', 
+            width: 240, 
+          },
+          drawerLabelStyle: {
+            fontSize: 18,
+            color: 'white',
+          },
+          headerShown: false,
+        }}
+      >
     <Drawer.Screen name="Home" component={Home} />
     <Drawer.Screen name="Sobre" component={Sobre} />
   </Drawer.Navigator>
@@ -29,7 +40,7 @@ return (
 
 function PublicRoutes() {
 return (
-    <Stack.Navigator initialRouteName="Login">
+    <Stack.Navigator initialRouteName="Home">
       <Stack.Screen name="Drawer" component={DrawerNavigator} options={{ headerShown: false }}/>
       <Stack.Screen options={{ headerShown: false }} name="Login" component={Login} />
       <Stack.Screen options={{ headerShown: false }} name="Cadastro" component={Cadastro} />
