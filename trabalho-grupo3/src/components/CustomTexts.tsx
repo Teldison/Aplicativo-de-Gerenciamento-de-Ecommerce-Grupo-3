@@ -15,8 +15,9 @@ export const CustomText = ({ text }: Texto) => {
 const style = StyleSheet.create({
     texto:{
         padding:10,
+        color:"white",
         textAlign:"center",
-        fontSize: 35,
+        fontSize: 34,
         fontWeight:"bold",
         textTransform:"capitalize",
     }

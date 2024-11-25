@@ -3,29 +3,39 @@ import { createNativeStackNavigator, NativeStackNavigationProp, NativeStackScree
   import { Login } from "../screens/LoginScreen";
   import { Cadastro } from "../screens/CadastroScreen";
 import { Home } from "../screens/HomeScreen";
-import { ProdutoPrivateScreen } from "../screens/ProdutoPrivateScreen";
+import { ProdutoScreen } from "../screens/ProdutoScreen";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { Sobre } from "../screens/SobreScreen";
+import { NavigationContainer } from "@react-navigation/native";
   
-  type StackNavigation = {
-    Home: undefined,
-    Login: undefined,
-    Cadastro: undefined,
-  }
-  
-  export type StackTypes = NativeStackNavigationProp<StackNavigation>;
-  export type LoginProps = NativeStackScreenProps<StackNavigation, "Login">
-  export type CadastroProps = NativeStackScreenProps<StackNavigation, "Cadastro">
-  export type HomeProps = NativeStackScreenProps<StackNavigation, "Home">
+export type RootStackParamList = {
+  Login: undefined;
+  Cadastro: undefined;
+  Home: undefined;
+  Produtos: undefined;
+  Drawer: undefined;
+};
+const Stack = createNativeStackNavigator<RootStackParamList>();
+const Drawer = createDrawerNavigator();
 
-  const { Navigator, Screen } = createNativeStackNavigator<StackNavigation>();
-  
-  const PublicRoutes = () => {
-      return(
-          <Navigator screenOptions={{headerShown: false}} initialRouteName="Home">
-            <Screen name="Home" component={Home} options={{headerShown:false, animation:"slide_from_left"}}/>
-            <Screen name="Login" component={Login}/>
-            <Screen name="Cadastro" component={Cadastro} options={{headerShown: false, animation:"slide_from_left"}}/>
-          </Navigator>
-      )
-  }
-  
-  export default PublicRoutes;
+function DrawerNavigator() {
+return (
+  <Drawer.Navigator screenOptions={{headerShown: false,}}>
+    <Drawer.Screen name="Home" component={Home} />
+    <Drawer.Screen name="Sobre" component={Sobre} />
+  </Drawer.Navigator>
+);
+}
+
+function PublicRoutes() {
+return (
+    <Stack.Navigator initialRouteName="Login">
+      <Stack.Screen name="Drawer" component={DrawerNavigator} options={{ headerShown: false }}/>
+      <Stack.Screen options={{ headerShown: false }} name="Login" component={Login} />
+      <Stack.Screen options={{ headerShown: false }} name="Cadastro" component={Cadastro} />
+      <Stack.Screen options={{ headerShown: false }} name="Home" component={DrawerNavigator} />
+    </Stack.Navigator>
+  );
+}
+
+export default PublicRoutes;

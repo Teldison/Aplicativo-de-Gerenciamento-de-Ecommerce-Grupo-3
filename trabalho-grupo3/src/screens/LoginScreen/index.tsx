@@ -64,6 +64,7 @@ export const Login = ({ navigation }: Props) => {
     } 
     finally {
       setLoading(false);
+      navigation.navigate("Home");
     }
   };
   

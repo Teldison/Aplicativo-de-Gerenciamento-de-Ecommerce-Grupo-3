@@ -8,10 +8,16 @@ import PublicRoutes from './PublicRoutes';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function Rotas() {
-  const {isLogged} : {isLogged:boolean} = useContext(AuthContext) ??{
-    isLogged:false,
+  const {isLogged} : {isLogged:boolean} = useContext(AuthContext) ??{ isLogged:false };
+  
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    {isLogged ? (
+      <Stack.Screen name="PrivateRoutes" component={PrivateRoutes} />
+    ) : (
+      <Stack.Screen name="PublicRoutes" component={PublicRoutes} />
+    )}
+  </Stack.Navigator>
+    );
   };
-  return <>{!isLogged ? <PublicRoutes /> : <PrivateRoutes/>}</>;
-
-};
 export default Rotas;

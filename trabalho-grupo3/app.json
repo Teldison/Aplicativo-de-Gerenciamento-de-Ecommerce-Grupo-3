@@ -4,25 +4,25 @@
     "slug": "TesteLogin",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/CervejaIcon.png",
+    "icon": "./assets/logo-vikings-bar.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/CervejaIcon.png",
+      "image": "./assets/logo-vikings-bar.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#412E23"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/CervejaIcon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/logo-vikings-bar.png",
+        "backgroundColor": "#412E23"
       }
     },
     "web": {
-      "favicon": "./assets/CervejaIcon.png"
+      "favicon": "./assets/logo-vikings-bar.png"
     }
   }
 }

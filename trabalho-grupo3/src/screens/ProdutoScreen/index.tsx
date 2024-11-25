@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createProdutos, getProdutos, deleteProdutos, updateProdutos } from '../../services/produtos/produtoService';
 import { Produto, ProdutoEditado } from '../../types/types';
+import { CustomButton } from '../../components/CustomButton';
 
 // Importar imagens usando require
 
@@ -13,7 +14,7 @@ const imagem3 = require('../../../assets/images/imagem3.png');
 const imagem4 = require('../../../assets/images/imagem4.png');
 
 
-export const ProdutoPrivateScreen = () => {
+export const ProdutoScreen = () => {
   const [produto, setProduto] = useState<Produto>({
     id: undefined,
     nome: '',
@@ -29,10 +30,31 @@ export const ProdutoPrivateScreen = () => {
   });
   const [modalVisivel, setModalVisivel] = useState(false);
   const [modalImagensVisivel, setModalImagensVisivel] = useState(false);
-  
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filteredProducts, setFilteredProducts] = useState<Produto[]>([]);
+
   useEffect(() => {
     buscarProdutos();
   }, []);
+
+  useEffect(() => {
+    const fetchProdutos = async () => {
+      const produtos = await getProdutos();
+      setProduto(produto);
+      setFilteredProducts(produtos);
+    };
+    fetchProdutos();
+  }, []);
+
+  const handleSearch = (text: string) => {
+    setSearchTerm(text);
+    const filtered = listaProdutos.filter((produto) =>
+      produto.nome.toLowerCase().includes(text.toLowerCase()) ||
+      produto.descricao.toLowerCase().includes(text.toLowerCase()) ||
+      produto.preco.toString().includes(text)
+    );
+    setFilteredProducts(filtered);
+  };
 
   const buscarProdutos = async () => {
     setLoading(true);
@@ -123,6 +145,12 @@ export const ProdutoPrivateScreen = () => {
 
   return (
     <View style={styles.container}>
+       <TextInput
+        style={styles.input}
+        placeholder="Buscar produto"
+        value={searchTerm}
+        onChangeText={handleSearch}
+      />
       <FlatList
         style={styles.lista}
         data={listaProdutos}
@@ -147,7 +175,7 @@ export const ProdutoPrivateScreen = () => {
               <FontAwesome name="pencil" size={30} color="white" />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => item.id !== undefined && deletarProduto(item.id)}>
-              <FontAwesome name="trash-o" size={30} color="white" />
+              <FontAwesome name="trash" size={30} color="white" />
             </TouchableOpacity>
           </View>
         </View>
@@ -156,11 +184,13 @@ export const ProdutoPrivateScreen = () => {
         keyExtractor={(item) => item.id?.toString() || Math.random().toString()} 
       />
       <View style={styles.containerButton}>
-        <Button title="Adicionar Produto" onPress={() => {
-          setProduto({ id: undefined, nome: '', preco: 0, descricao: '', imagem: null });
-          setIsEditing({ item: undefined, editando: false });
-          setModalVisivel(true);
-        }} 
+        <CustomButton
+          title='Adicionar Produto'
+          onPress={() => {
+            setProduto({ id: undefined, nome: '', preco: 0, descricao: '', imagem: null });
+            setIsEditing({ item: undefined, editando: false });
+            setModalVisivel(true);
+          }}
         />
       </View>
 
@@ -189,16 +219,19 @@ export const ProdutoPrivateScreen = () => {
               onChangeText={(text) => setProduto({ ...produto, descricao: text })}
               placeholder="Descrição do produto"
             />
-            <Button title="Selecionar Imagem" onPress={() => setModalImagensVisivel(true)} />
+            <CustomButton
+              title='Selecionar Imagem'
+              onPress={() => setModalImagensVisivel(true)}
+            />
             {produto.imagem ? (
               <Image source={produto.imagem} style={styles.previewImagem} />
             ) : null}
-            <Button
+            <CustomButton
               title={isEditing.editando ? 'Salvar Alterações' : 'Adicionar Produto'}
               onPress={isEditing.editando ? salvarEdicao : adicionarProduto}
             />
-            <Button
-              title="Cancelar"
+            <CustomButton
+              title='Cancelar'
               onPress={() => {
                 setModalVisivel(false);
                 setIsEditing({ item: undefined, editando: false });
@@ -228,7 +261,10 @@ export const ProdutoPrivateScreen = () => {
               </TouchableOpacity>
 
             </ScrollView>
-            <Button title="Cancelar" onPress={() => setModalImagensVisivel(false)} />
+            <CustomButton
+              title='Cancelar'
+              onPress={() => setModalImagensVisivel(false)}
+            />
           </View>
         </View>
       </Modal>
@@ -242,7 +278,7 @@ const styles = StyleSheet.create({
     padding: 19,
     marginTop: 0,
     justifyContent: 'flex-end',
-    backgroundColor: '#6e2900', 
+    backgroundColor: '#6e2900',
   },
   containerButton: {
     marginBottom: 16,
@@ -251,7 +287,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     marginBottom: 6,
     padding: 8,
   },
@@ -295,16 +331,16 @@ const styles = StyleSheet.create({
     color: '#999',
   },
   itemNome: {
-    fontWeight: '500',
+    fontWeight: 'bold',
     fontSize: 28,
-    color: '#fff',
+    color: '#ffffff',
     marginTop: 10,
     fontFamily: 'Georgia', 
   },
   itemPreco: {
     fontWeight: '500',
     fontSize: 20,
-    color: '#fff',
+    color: '#292929',
     marginTop: 5,
     fontFamily: 'Georgia', 
   },
@@ -323,7 +359,7 @@ const styles = StyleSheet.create({
   },
   modalConteudo: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#6e2900',
     borderRadius: 10,
     padding: 35,
     elevation: 5,
@@ -336,8 +372,9 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   previewImagem: {
-    width: '100%',
+    width: '60%',
     height: 200,
+    alignSelf: 'center',
     marginVertical: 10,
   },
   backgroundImage: {

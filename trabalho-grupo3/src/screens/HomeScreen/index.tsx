@@ -28,14 +28,9 @@ return(
             ):(               
                 <View style={styles.logado}>
                     <CustomText text="painel de controle interno"/>
-                    <CustomText text="escolha um dos menus"/>
                     <CustomButton
                         title="Produtos"
                         onPress={()=> navigation.navigate("Produtos")}
-                    />
-                    <CustomButton
-                        title="Usuarios"
-                        onPress={()=> navigation.navigate("Usuarios")}
                     />
                 </View>
             )}
@@ -54,7 +49,7 @@ const styles = StyleSheet.create({
         alignItems: "center",        margin:10,
     },
     Alerta:{
-        color: "#ff0000",
+        color: "#ff1000",
         fontSize: 30,
         fontWeight: "bold",
         textAlign: "center",

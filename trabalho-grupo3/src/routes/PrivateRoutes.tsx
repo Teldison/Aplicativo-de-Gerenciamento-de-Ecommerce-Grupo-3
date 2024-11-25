@@ -3,31 +3,39 @@ import {
     NativeStackNavigationProp,
     NativeStackScreenProps,
   } from "@react-navigation/native-stack";
-import { ProdutoPrivateScreen } from "../screens/ProdutoPrivateScreen";
+import { ProdutoScreen } from "../screens/ProdutoScreen";
 import { Usuario } from "../screens/UsuariosScreen";
 import { Home } from "../screens/HomeScreen";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { Sobre } from "../screens/SobreScreen";
 
-type StackNavigation = {
-    Home: undefined,  
+
+export type RootStackParamList = {
+    Home: undefined;
     Produtos: undefined;
-    Usuarios: undefined;
+    Drawer: undefined;
+  };
+  const Stack = createNativeStackNavigator<RootStackParamList>();
+  const Drawer = createDrawerNavigator();
+  
+
+function DrawerNavigator() {
+    return (
+      <Drawer.Navigator screenOptions={{headerShown: false,}}>
+        <Drawer.Screen name="Home" component={Home} />
+        <Drawer.Screen name="Sobre" component={Sobre} />
+      </Drawer.Navigator>
+    );
 }
-
-export type StackTypes = NativeStackNavigationProp<StackNavigation>;
-export type HomeProps = NativeStackScreenProps<StackNavigation, "Home">;
-export type UsuariosProps = NativeStackScreenProps<StackNavigation, "Usuarios">;
-export type ProdutosProps = NativeStackScreenProps<StackNavigation, "Produtos">
-
-const { Navigator, Screen } = createNativeStackNavigator<StackNavigation>();
-
-const PrivateRoutes = () =>{
-    return(
-        <Navigator initialRouteName="Home">
-            <Screen name="Home" component={Home} options={{headerShown:false, animation:"slide_from_left"}}/>
-            <Screen name="Produtos" component={ProdutoPrivateScreen} options={{headerShown:false, animation:"slide_from_left"}}/>
-            <Screen name="Usuarios" component={Usuario} options={{headerShown:false, animation:"slide_from_left"}}/>
-        </Navigator>
-    )
+    
+function PrivateRoutes() {
+    return (
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen name="Drawer" component={DrawerNavigator} options={{ headerShown: false }}/>
+          <Stack.Screen options={{ headerShown: false }} name="Produtos" component={ProdutoScreen} />
+          <Stack.Screen options={{ headerShown: false }} name="Home" component={DrawerNavigator} />
+        </Stack.Navigator>
+      );
 }
 
 export default PrivateRoutes;

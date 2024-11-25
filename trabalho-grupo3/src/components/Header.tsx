@@ -9,15 +9,15 @@ import {
   TouchableWithoutFeedback,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useNavigation, NavigationProp, DrawerActions } from '@react-navigation/native';
 import { CustomButton } from './CustomButton';
 import { RootStackParamList } from '../types/rootStackParamList';
-import { getUsuarios} from '../services/usuarios/usuarioService';
+import { getUsuarios } from '../services/usuarios/usuarioService';
 import { AuthContext } from '../contexts/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 export const Header: React.FC = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -86,18 +86,21 @@ export const Header: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.top}/>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton}>
+        <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.dispatch(DrawerActions.openDrawer)}>
           <Ionicons name="menu" size={24} color="white" />
         </TouchableOpacity>
         <View style={styles.marca}>
-          <Text style={styles.title}>Bebidas</Text>
-          <Text style={styles.title}>Show</Text>
+          <Image
+            source={{ uri: "https://i.imgur.com/zhLHvjs.png" }}
+            style={styles.logo}
+          />
         </View>
         <TouchableOpacity style={styles.iconButton} onPress={() => setModalVisible(true)}>
-          {user?(
+          {user ? (
             <Ionicons name="person-circle" size={35} color="white" />
-          ):(
+          ) : (
             <Ionicons name="person-add" size={30} color="white" />
           )}
         </TouchableOpacity>
@@ -113,11 +116,10 @@ export const Header: React.FC = () => {
           <View style={styles.modalContainer}>
             <TouchableWithoutFeedback>
               <View style={styles.modalView}>
-                {user ?(
+                {user ? (
                   <>
                     <Ionicons name="person-circle" size={40} color="black" />
                     <Text style={styles.modalTitle}>Informações do Usuário</Text>
-
                     <Text style={styles.userInfo}>Nome: <Text style={styles.userInfoHighlight}>{user.usuario}</Text></Text>
                     <Text style={styles.userInfo}>Email: <Text style={styles.userInfoHighlight}>{user.email}</Text></Text>
                     <CustomButton title="Sair" onPress={handleLogout} />
@@ -165,67 +167,69 @@ export const Header: React.FC = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
-    container: {
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#000000c8',
-        padding: 10,
-    },
-    marca: {
-        flexDirection: 'row',
-    },
-    title: {
-        color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    iconButton: {
-        padding: 10,
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalView: {
-        width: 300,
-        backgroundColor: '#D2B48C',
-        borderRadius: 15,
-        padding: 20,
-        alignItems: 'center',
-    },
-    modalTitle: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    userInfo:{
-      fontSize:16,
-      marginBottom:10,
-    },
-    userInfoHighlight: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      color: '#000',
-    },
-    input: {
-        width: '100%',
-        height: 40,
-        borderColor: '#8B4513', 
-        borderWidth: 1,
-        borderRadius: 5,
-        marginBottom: 15,
-        paddingHorizontal: 10,
-    },
-    buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      width: '100%',
-      marginTop: 10,
-    },
+  top: {
+    backgroundColor: '#000000c8',
+    height: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#000000c8',
+    padding: 10,
+  },
+  marca: {
+    flexDirection: 'row',
+  },
+  logo: {
+    width: 70,
+    height: 70,
+  },
+  iconButton: {
+    padding: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    width: 300,
+    backgroundColor: '#D2B48C',
+    borderRadius: 15,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  userInfo: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  userInfoHighlight: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  input: {
+    width: '100%',
+    height: 40,
+    borderColor: '#8B4513',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+  },
 });

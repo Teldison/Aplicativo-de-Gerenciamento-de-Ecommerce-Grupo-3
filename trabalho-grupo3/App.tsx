@@ -5,6 +5,7 @@ import {AuthProvider} from './src/contexts/AuthContext';
 import * as SplashScreen from "expo-splash-screen"
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NetworkStatus from './src/components/NetworkStatus/NetworkStatus';
+import DrawerNavigator from './src/routes/DrawerNavigator';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,12 +27,12 @@ export default function App() {
   }, []);
 
   return (
-        <AuthProvider>
-    <NavigationContainer>
-          <NetworkStatus />
-          <Rotas/>
-    </NavigationContainer>
-        </AuthProvider>
+    <AuthProvider>
+      <NavigationContainer>
+        <NetworkStatus />
+        <Rotas/>
+      </NavigationContainer>
+    </AuthProvider>
 
   );
 }
